@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កុងតាក់ និងអំពូលភ្លើងអាគៀន (Electric Spark Bulb)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Khmer OS Battambang', sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            gap: 1.5rem;
+        }
+
+        .room-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        /* ផ្នែកអំពូលភ្លើង និងស៊ុមភ្លើងរត់ */
+        .fixture-wrapper {
+            position: relative;
+            padding: 15px;
+            border-radius: 20px;
+            background: #1e293b;
+            overflow: hidden;
+        }
+
+        .fixture-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(from 0deg, transparent, transparent, #38bdf8, #818cf8, #c084fc, #f43f5e, transparent);
+            animation: rotateBorder 4s linear infinite;
+            opacity: 0.3;
+            transition: opacity 0.4s;
+        }
+
+        .fixture-wrapper.on::before {
+            opacity: 1;
+            animation: rotateBorder 2s linear infinite;
+        }
+
+        .fixture-inner {
+            position: relative;
+            background: #1e293b;
+            padding: 10px 20px;
+            border-radius: 14px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .wire {
+            width: 3px;
+            height: 80px;
+            background-color: #475569;
+            margin: 0 auto;
+        }
+
+        .bulb-base {
+            width: 34px;
+            height: 22px;
+            background: linear-gradient(90deg, #64748b, #94a3b8, #64748b);
+            margin: 0 auto;
+            border-radius: 4px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .bulb-base::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 7px;
+            width: 20px;
+            height: 5px;
+            background-color: #334155;
+            border-radius: 2px;
+        }
+
+        .bulb {
+            width: 90px;
+            height: 90px;
+            background-color: #0f172a;
+            border-radius: 50%;
+            margin: -3px auto 0 auto;
+            position: relative;
+            z-index: 1;
+            box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.8);
+            transition: background-color 0.4s, box-shadow 0.4s;
+        }
+
+        .filament {
+            position: absolute;
+            top: 18px;
+            left: 35px;
+            width: 20px;
+            height: 22px;
+            border: 2px solid #475569;
+            border-bottom: none;
+            border-radius: 50% 50% 0 0;
+            transition: border-color 0.4s;
+        }
+
+        /* ស្ថានភាពពេលអំពូលភ្លឺ (On) និងមានភ្លើងអាគៀនឆាបៗ */
+        .fixture-wrapper.on .bulb {
+            animation: rainbowGlow 6s infinite;
+        }
+
+        .fixture-wrapper.on .filament {
+            border-color: #00ffff;
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #38bdf8;
+        }
+
+        /* ប່ដក់ភ្លើងអាគៀន (Electric Spark Effect) */
+        .spark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #38bdf8, 0 0 20px #00ffff, 0 0 30px #ffffff;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .fixture-wrapper.on .spark {
+            animation: sparkAnim 0.8s infinite alternate;
+        }
+
+        .spark:nth-child(1) { top: 40px; left: 20px; animation-delay: 0.1s; }
+        .spark:nth-child(2) { top: 60px; right: 15px; animation-delay: 0.3s; }
+        .spark:nth-child(3) { top: 80px; left: 30px; animation-delay: 0.5s; }
+
+        @keyframes sparkAnim {
+            0% { transform: scale(0.5); opacity: 0; filter: brightness(1); }
+            50% { transform: scale(1.8); opacity: 1; filter: brightness(2); }
+            100% { transform: scale(0.8); opacity: 0.2; }
+        }
+
+        @keyframes rainbowGlow {
+            0% { background-color: #ff3333; box-shadow: 0 0 30px #ff3333, 0 0 60px #ff0000, inset 0 0 15px #fff; }
+            14% { background-color: #ffa500; box-shadow: 0 0 30px #ffa500, 0 0 60px #ff8c00, inset 0 0 15px #fff; }
+            28% { background-color: #ffff33; box-shadow: 0 0 30px #ffff33, 0 0 60px #ffff00, inset 0 0 15px #fff; }
+            42% { background-color: #33ff33; box-shadow: 0 0 30px #33ff33, 0 0 60px #00ff00, inset 0 0 15px #fff; }
+            57% { background-color: #33ffff; box-shadow: 0 0 30px #33ffff, 0 0 60px #00ffff, inset 0 0 15px #fff; }
+            71% { background-color: #3333ff; box-shadow: 0 0 30px #3333ff, 0 0 60px #0000ff, inset 0 0 15px #fff; }
+            85% { background-color: #ee82ee; box-shadow: 0 0 30px #ee82ee, 0 0 60px #da70d6, inset 0 0 15px #fff; }
+            100% { background-color: #ff3333; box-shadow: 0 0 30px #ff3333, 0 0 60px #ff0000, inset 0 0 15px #fff; }
+        }
+
+        /* ផ្នែកកុងតាក់ និងស៊ុមភ្លើងរត់ */
+        .switch-wrapper {
+            position: relative;
+            padding: 15px;
+            border-radius: 20px;
+            background: #1e293b;
+            overflow: hidden;
+        }
+
+        .switch-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(from 0deg, transparent, transparent, #f43f5e, #c084fc, #818cf8, #38bdf8, transparent);
+            animation: rotateBorder 4s linear infinite;
+        }
+
+        @keyframes rotateBorder {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .switch-box {
+            position: relative;
+            background-color: #1e293b;
+            padding: 12px 20px;
+            border-radius: 12px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .switch-title {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .light-switch {
+            width: 46px;
+            height: 80px;
+            background-color: #0f172a;
+            border-radius: 8px;
+            margin: 0 auto;
+            position: relative;
+            cursor: pointer;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.6);
+            border: 2px solid #334155;
+        }
+
+        .switch-toggle {
+            width: 36px;
+            height: 38px;
+            background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+            border-radius: 6px;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .light-switch.active .switch-toggle {
+            transform: translateY(32px);
+            background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+        }
+
+        .instruction {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="room-container">
+        <!-- ផ្នែកអំពូលភ្លើង និងភ្លើងអាគៀន -->
+        <div class="fixture-wrapper" id="fixtureWrapper">
+            <!-- គ្រាប់ភ្លើងអាគៀន (Spark) -->
+            <div class="spark"></div>
+            <div class="spark"></div>
+            <div class="spark"></div>
+
+            <div class="fixture-inner">
+                <div class="wire"></div>
+                <div class="bulb-base"></div>
+                <div class="bulb">
+                    <div class="filament"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ផ្នែកកុងតាក់ភ្លើង -->
+        <div class="switch-wrapper">
+            <div class="switch-box">
+                <div class="switch-title">កុងតាក់ភ្លើង</div>
+                <div class="light-switch" id="lightSwitch">
+                    <div class="switch-toggle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="instruction" id="instructionText">
+        ⚡ សូមចុចលើកុងតាក់ដើម្បីបើកអំពូលភ្លើងអាគៀន!
+    </div>
+
+    <script>
+        const lightSwitch = document.getElementById('lightSwitch');
+        const fixtureWrapper = document.getElementById('fixtureWrapper');
+        const instructionText = document.getElementById('instructionText');
+
+        // មុខងារបង្កើតសំឡេងកុងតាក់
+        function playClickSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.05);
+            } catch (e) {}
+        }
+
+        // មុខងារពេលចុចលើកុងតាក់
+        lightSwitch.addEventListener('click', () => {
+            playClickSound();
+            
+            lightSwitch.classList.toggle('active');
+            fixtureWrapper.classList.toggle('on');
+
+            if (fixtureWrapper.classList.contains('on')) {
+                instructionText.innerHTML = "⚡ អំពូលភ្លើងអាគៀនឆាបៗ និងប្ដូរ ៧ ពណ៌យ៉ាងស្រស់ស្អាត!";
+                instructionText.style.color = "#38bdf8";
+            } else {
+                instructionText.innerHTML = "⚡ សូមចុចលើកុងតាក់ដើម្បីបើកអំពូលភ្លើងអាគៀន!";
+                instructionText.style.color = "#94a3b8";
+            }
+        });
+    </script>
+
+</body>
+</html>
